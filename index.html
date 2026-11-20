@@ -1,113 +1,74 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#b8c9d9" />
-  <title>Angiru Player</title>
-  <style>
-    :root { --blue:#3e85c5; --deep:#17456c; --lcd:#c9e6ee; --ink:#14334b; --silver:#dbe2e9; }
-    * { box-sizing:border-box; }
-    body {
-      min-height:100vh; margin:0; display:grid; place-items:center; padding:24px;
-      background:radial-gradient(ellipse at 50% 15%,#d7e8f7 0,#91abc4 42%,#4e647b 100%);
-      font-family:Verdana,Arial,sans-serif; color:#24394c;
-    }
-    .player {
-      width:min(100%,390px); padding:18px; border-radius:30px;
-      background:linear-gradient(145deg,#f5f8fb,#9eacbb 22%,#e8edf2 48%,#8798a9 78%,#f1f5f8);
-      box-shadow:inset 2px 2px 4px #fff9, inset -3px -4px 9px #53677a66, 0 24px 45px #172e4666;
-      border:1px solid #ffffffaa;
-    }
-    .brandrow { display:flex; justify-content:space-between; align-items:center; padding:2px 8px 12px; }
-    .brand { font-size:12px; font-weight:900; letter-spacing:3px; color:#334b61; text-transform:uppercase; }
-    .model { font-size:9px; letter-spacing:1px; color:#526a7f; }
-    .screen {
-      border:7px solid #72889b; border-radius:12px; padding:14px 12px 12px;
-      background:linear-gradient(150deg,#d7f0f2,#a9d2de 70%,#bde2e7);
-      box-shadow:inset 0 3px 9px #3b5e7180,0 2px 1px #fff9; min-height:188px;
-      font-family:"Courier New",monospace; color:#12384d; position:relative; overflow:hidden;
-    }
-    .screen:after { content:""; position:absolute; inset:0; pointer-events:none; background:repeating-linear-gradient(transparent 0 3px,#31566b0a 3px 4px); }
-    .screen-top { display:flex; justify-content:space-between; font-size:10px; letter-spacing:1px; }
-    .track { margin:17px 0 3px; font-weight:bold; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .artist { font-size:11px; opacity:.8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .visualizer { display:flex; height:39px; align-items:center; justify-content:center; gap:4px; margin:12px 0 5px; }
-    .bar { width:5px; height:7px; background:#2b6c90; border-radius:2px; animation:equalize .7s ease-in-out infinite alternate; animation-play-state:paused; }
-    .playing .bar { animation-play-state:running; }
-    .bar:nth-child(2n){animation-duration:.45s}.bar:nth-child(3n){animation-duration:.9s}.bar:nth-child(4n){animation-duration:.58s}
-    @keyframes equalize { from{height:5px} to{height:34px} }
-    .progress-wrap { display:flex; align-items:center; gap:8px; font-size:9px; }
-    .progress { flex:1; height:4px; background:#65889a66; border-radius:10px; overflow:hidden; }
-    .progress-fill { width:28%; height:100%; background:#174e73; }
-    .device-controls { margin:15px auto 10px; display:flex; justify-content:center; align-items:center; gap:12px; }
-    button {
-      border:0; cursor:pointer; color:#314a60; font-weight:bold;
-      background:linear-gradient(145deg,#f8fbfd,#aebdca);
-      box-shadow:3px 4px 7px #5e718366,-2px -2px 5px #fff9,inset 1px 1px 2px #fff;
-      transition:transform .12s,filter .12s;
-    }
-    button:active { transform:translateY(2px); filter:brightness(.94); box-shadow:inset 2px 3px 5px #61748866; }
-    .round { width:46px; height:46px; border-radius:50%; font-size:15px; }
-    .play { width:60px; height:60px; border-radius:50%; font-size:21px; color:#174e73; }
-    .modes { display:flex; justify-content:center; gap:10px; margin:12px 0; }
-    .mode { border-radius:14px; padding:7px 13px; font-size:10px; letter-spacing:.5px; }
-    .mode.active { background:linear-gradient(145deg,#5b9ed1,#2f6b9e); color:#fff; box-shadow:inset 2px 2px 4px #163c5c66; }
-    .volume { display:flex; align-items:center; gap:9px; padding:5px 9px; font-size:12px; }
-    input[type=range] { accent-color:#326e9e; width:100%; }
-    .playlist { margin-top:14px; border-radius:15px; padding:10px; background:linear-gradient(145deg,#b4c2cf,#e7edf2); box-shadow:inset 2px 2px 5px #73869a66; }
-    .playlist-title { font-size:10px; font-weight:bold; letter-spacing:1.5px; color:#536a7f; margin:0 0 7px 4px; }
-    .song { display:flex; gap:9px; align-items:center; padding:8px 7px; border-radius:9px; font-size:11px; }
-    .song.current { background:#6d9fc466; color:#193e5c; font-weight:bold; }
-    .song .num { opacity:.65; font-family:monospace; }
-    .song .name { flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-    .song .duration { font-family:monospace; opacity:.65; }
-    .bottom { text-align:center; font-size:8px; letter-spacing:2px; color:#52697d; margin:15px 0 1px; }
-    @media(max-width:420px){ body{padding:14px}.player{padding:14px;border-radius:25px} }
-  </style>
-</head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#315a88"><title>Angiru Player</title>
+<style>
+:root{--body-a:#f0f2f4;--body-b:#9aa5b1;--lcd:#0866ff;--lcd2:#0641b9;--glow:#77b7ff;--ink:#d6efff;--button:#d2d8df}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;padding:20px 14px 30px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;background:radial-gradient(ellipse at top,#c6d9ee,#536c89 65%,#293d53);font-family:Arial,sans-serif;color:#24384d}
+.player{position:relative;width:min(100%,355px);padding:15px 14px 18px;border-radius:34px 34px 44px 44px;background:linear-gradient(125deg,var(--body-a),var(--body-b) 28%,#e7edf2 49%,var(--body-b) 78%,var(--body-a));border:1px solid #fff9;box-shadow:inset 2px 2px 4px #fff,inset -5px -6px 12px #52647788,0 24px 42px #142b4466}
+.loop{width:42px;height:42px;border:6px solid #9caab7;border-radius:50%;margin:-1px auto 5px;box-shadow:inset 1px 1px 4px #52677c,2px 3px 4px #5c7184;position:relative}
+.loop:after{content:"";position:absolute;inset:4px;border:2px solid #e6edf2;border-radius:50%}
+.charm{position:absolute;left:-23px;top:25px;font-size:36px;filter:drop-shadow(2px 3px 2px #273c5266);transform:rotate(-12deg);z-index:3}
+.top{display:flex;justify-content:space-between;align-items:center;padding:5px 9px 11px}
+.logo{font-size:12px;font-weight:900;letter-spacing:4px;color:#324d67}
+.label{font-size:8px;letter-spacing:1px;color:#506981}
+.screen{border-radius:12px;background:linear-gradient(160deg,var(--glow),var(--lcd) 22%,var(--lcd2));border:6px solid #263c50;box-shadow:inset 0 0 20px #001e6699,0 2px 0 #fff8;padding:13px 11px;color:var(--ink);font-family:"Courier New",monospace;min-height:176px;position:relative;overflow:hidden;text-shadow:0 0 5px #d9edff66}
+.screen:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(transparent 0 3px,#00173b18 3px 4px);pointer-events:none}
+.screen-head{display:flex;justify-content:space-between;font-size:10px;letter-spacing:1px}
+.songname{font-size:14px;font-weight:bold;margin-top:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.artist{font-size:10px;margin-top:3px;opacity:.85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.eq{height:38px;display:flex;gap:3px;align-items:center;justify-content:center;margin:12px 0 8px}
+.eq i{width:4px;height:5px;border-radius:2px;background:var(--ink);animation:eq .55s infinite alternate ease-in-out;animation-play-state:paused}
+.playing .eq i{animation-play-state:running}
+.eq i:nth-child(3n){animation-duration:.8s}.eq i:nth-child(2n){animation-duration:.38s}.eq i:nth-child(5n){animation-duration:.65s}
+@keyframes eq{to{height:30px}}
+.timeline{display:flex;align-items:center;gap:7px;font-size:9px}
+.track{height:4px;border-radius:4px;background:#ffffff66;flex:1;overflow:hidden}.fill{height:100%;width:25%;background:var(--ink)}
+.controls{display:flex;align-items:center;justify-content:center;gap:13px;margin:16px 0 11px}
+button{cursor:pointer;border:0;color:#324b64;background:linear-gradient(145deg,#f8fbfd,#a9b5c1);box-shadow:3px 4px 6px #52657877,-2px -2px 4px #fff9,inset 1px 1px 2px white;font-weight:bold}
+button:active{transform:translateY(2px);box-shadow:inset 2px 3px 5px #5c6e8066}
+.round{height:43px;width:43px;border-radius:50%;font-size:13px}.mainplay{height:54px;width:54px;border-radius:50%;font-size:19px;color:#164d78}
+.options{display:flex;justify-content:center;gap:8px;margin-bottom:11px}.option{border-radius:14px;padding:7px 10px;font-size:9px}.option.active{background:linear-gradient(#5297d5,#24659e);color:white}
+.vol{display:flex;align-items:center;gap:7px;padding:3px 7px;font-size:13px}input[type=range]{width:100%;accent-color:#28669a}
+.playlist{margin:12px 1px 0;padding:10px;border-radius:12px;background:linear-gradient(145deg,#c6d0d9,#e9eef3);box-shadow:inset 2px 2px 5px #75879a66;color:#415970}
+.pltitle{font-size:9px;font-weight:bold;letter-spacing:1.5px;margin:0 0 7px 3px}.song{display:flex;align-items:center;gap:8px;padding:7px;border-radius:8px;font-size:10px}.song.current{background:#91b5d366;color:#1d405f;font-weight:bold}.song .n{font-family:monospace;opacity:.65}.song .s{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.duration{font-family:monospace;opacity:.7}
+.signature{text-align:center;margin-top:13px;font-size:8px;letter-spacing:2px;color:#61758a}
+.customize{width:min(100%,355px);background:#ffffffd9;border:1px solid #fff8;border-radius:18px;padding:13px 15px;box-shadow:0 8px 22px #20395333}
+.customize h2{margin:0 0 10px;font-size:12px;letter-spacing:1.5px;color:#38566f}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0;font-size:11px}.row select{max-width:175px;border:1px solid #b8c8d7;border-radius:9px;padding:7px;background:white;color:#334b61;font-size:11px}
+@media(max-width:380px){.player{padding:13px}.screen{min-height:165px}.charm{left:-15px}}
+</style></head>
 <body>
-  <main class="player" id="player">
-    <div class="brandrow"><span class="brand">ANGIRU</span><span class="model">MP3 · DIGITAL AUDIO</span></div>
-    <section class="screen" aria-label="Display do player">
-      <div class="screen-top"><span id="status">▶ READY</span><span>🔋 100%</span></div>
-      <div class="track" id="track">Dreams (Demo)</div>
-      <div class="artist" id="artist">Angiru Playlist · faixa de exemplo</div>
-      <div class="visualizer" aria-hidden="true">
-        <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
-      </div>
-      <div class="progress-wrap"><span>0:00</span><div class="progress"><div class="progress-fill"></div></div><span>3:42</span></div>
-    </section>
-    <div class="device-controls">
-      <button class="round" id="prev" aria-label="Anterior">◀◀</button>
-      <button class="play" id="play" aria-label="Play">▶</button>
-      <button class="round" id="next" aria-label="Próxima">▶▶</button>
-    </div>
-    <div class="modes">
-      <button class="mode" id="shuffle">🔀 SHUFFLE</button>
-      <button class="mode" id="repeat">↻ REPEAT</button>
-    </div>
-    <div class="volume"><span>🔉</span><input id="volume" type="range" min="0" max="100" value="65" aria-label="Volume"><span>🔊</span></div>
-    <section class="playlist">
-      <div class="playlist-title">PLAYLIST · 03 TRACKS</div>
-      <div class="song current"><span class="num">01</span><span class="name">Dreams (Demo)</span><span class="duration">3:42</span></div>
-      <div class="song"><span class="num">02</span><span class="name">Blue Memories</span><span class="duration">4:08</span></div>
-      <div class="song"><span class="num">03</span><span class="name">Midnight Radio</span><span class="duration">3:56</span></div>
-    </section>
-    <div class="bottom">MADE WITH ♡ FOR ANGIRU</div>
-  </main>
-  <script>
-    const player=document.getElementById('player'), playBtn=document.getElementById('play'), status=document.getElementById('status');
-    playBtn.addEventListener('click',()=>{
-      const playing=player.classList.toggle('playing');
-      playBtn.textContent=playing?'Ⅱ':'▶'; status.textContent=playing?'♪ PLAYING':'▶ READY';
-    });
-    ['shuffle','repeat'].forEach(id=>document.getElementById(id).addEventListener('click',e=>e.currentTarget.classList.toggle('active')));
-    const songs=[['Dreams (Demo)','Angiru Playlist · faixa de exemplo'],['Blue Memories','Angiru Playlist · faixa de exemplo'],['Midnight Radio','Angiru Playlist · faixa de exemplo']];
-    let index=0;
-    function selectSong(i){index=(i+songs.length)%songs.length;document.getElementById('track').textContent=songs[index][0];document.getElementById('artist').textContent=songs[index][1];document.querySelectorAll('.song').forEach((el,n)=>el.classList.toggle('current',n===index));}
-    document.getElementById('prev').addEventListener('click',()=>selectSong(index-1));
-    document.getElementById('next').addEventListener('click',()=>selectSong(index+1));
-  </script>
-</body>
-</html>
+<main class="player" id="player">
+<div class="loop" title="Argola de chaveiro"></div><span class="charm" id="charm">🍓</span>
+<div class="top"><span class="logo">ANGIRU</span><span class="label">MP3 · KEYCHAIN EDITION</span></div>
+<section class="screen"><div class="screen-head"><span id="status">▶ READY</span><span>▣ BAT 100%</span></div>
+<div class="songname" id="songname">Dreams (Demo)</div><div class="artist" id="artist">Angiru · demo track</div>
+<div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="timeline"><span>0:00</span><div class="track"><div class="fill"></div></div><span>3:42</span></div></section>
+<div class="controls"><button class="round" id="prev">◀◀</button><button class="mainplay" id="play">▶</button><button class="round" id="next">▶▶</button></div>
+<div class="options"><button class="option" id="shuffle">🔀 SHUFFLE</button><button class="option" id="repeat">↻ REPEAT</button></div>
+<div class="vol"><span>🔉</span><input type="range" min="0" max="100" value="65" aria-label="Volume"><span>🔊</span></div>
+<section class="playlist"><div class="pltitle">PLAYLIST · 03 TRACKS</div>
+<div class="song current"><span class="n">01</span><span class="s">Dreams (Demo)</span><span class="duration">3:42</span></div>
+<div class="song"><span class="n">02</span><span class="s">Blue Memories</span><span class="duration">4:08</span></div><div class="song"><span class="n">03</span><span class="s">Midnight Radio</span><span class="duration">3:56</span></div></section>
+<div class="signature">MADE WITH ♡ FOR ANGIRU</div></main>
+<section class="customize"><h2>✨ PERSONALIZE SEU MP3</h2>
+<div class="row"><label for="bodycolor">Cor do aparelho</label><select id="bodycolor"><option value="silver">Prata clássico</option><option value="black">Preto</option><option value="pink">Rosa metálico</option><option value="blue">Azul</option><option value="lilac">Lilás</option><option value="mint">Verde menta</option></select></div>
+<div class="row"><label for="lcdcolor">Cor do LCD</label><select id="lcdcolor"><option value="blue">Azul luminoso</option><option value="cyan">Ciano</option><option value="pink">Rosa</option><option value="green">Verde</option><option value="amber">Âmbar</option><option value="purple">Roxo</option></select></div>
+<div class="row"><label for="charmselect">Chaveirinho</label><select id="charmselect"><option>🍓 Moranguinho</option><option>⭐ Estrela</option><option>💖 Coração</option><option>🐰 Coelhinho</option><option>🦋 Borboleta</option><option>🌙 Lua</option><option>🍒 Cerejinhas</option><option>🎀 Laço</option><option>🐸 Sapinho</option><option>🧸 Ursinho</option><option>💿 Mini CD</option><option>🔮 Cristal</option><option>Sem chaveiro</option></select></div></section>
+<script>
+const device=document.getElementById('player'),play=document.getElementById('play'),status=document.getElementById('status');
+play.onclick=()=>{let on=device.classList.toggle('playing');play.textContent=on?'Ⅱ':'▶';status.textContent=on?'♪ PLAYING':'▶ READY'};
+['shuffle','repeat'].forEach(id=>document.getElementById(id).onclick=e=>e.currentTarget.classList.toggle('active'));
+const bodyThemes={silver:['#f0f2f4','#9aa5b1'],black:['#555b63','#171a20'],pink:['#f9dce8','#ad718f'],blue:['#d9ecff','#638cb5'],lilac:['#eee4fa','#9882b5'],mint:['#e2f7ed','#80b7a0']};
+const lcdThemes={blue:['#77b7ff','#0866ff','#0641b9','#d6efff'],cyan:['#a1ffff','#08c9d5','#087a99','#e4ffff'],pink:['#ffb4e4','#ff42ae','#a40c73','#ffe6fa'],green:['#9dffae','#16c946','#08752c','#e5ffeb'],amber:['#ffe18a','#ffae00','#a35b00','#fff5d2'],purple:['#d6a8ff','#923cff','#4e159d','#f2e5ff']};
+document.getElementById('bodycolor').onchange=e=>{let c=bodyThemes[e.target.value];document.documentElement.style.setProperty('--body-a',c[0]);document.documentElement.style.setProperty('--body-b',c[1])};
+document.getElementById('lcdcolor').onchange=e=>{let c=lcdThemes[e.target.value];['--glow','--lcd','--lcd2','--ink'].forEach((v,i)=>document.documentElement.style.setProperty(v,c[i]))};
+document.getElementById('charmselect').onchange=e=>document.getElementById('charm').textContent=e.target.value.split(' ')[0]==='Sem'?'':e.target.value.split(' ')[0];
+let songs=['Dreams (Demo)','Blue Memories','Midnight Radio'],idx=0;
+function choose(i){idx=(i+songs.length)%songs.length;document.getElementById('songname').textContent=songs[idx];document.querySelectorAll('.song').forEach((s,n)=>s.classList.toggle('current',n===idx))}
+document.getElementById('prev').onclick=()=>choose(idx-1);document.getElementById('next').onclick=()=>choose(idx+1);
+</script></body></html>
