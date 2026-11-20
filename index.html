@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#b8c9d9" />
+  <title>Angiru Player</title>
+  <style>
+    :root { --blue:#3e85c5; --deep:#17456c; --lcd:#c9e6ee; --ink:#14334b; --silver:#dbe2e9; }
+    * { box-sizing:border-box; }
+    body {
+      min-height:100vh; margin:0; display:grid; place-items:center; padding:24px;
+      background:radial-gradient(ellipse at 50% 15%,#d7e8f7 0,#91abc4 42%,#4e647b 100%);
+      font-family:Verdana,Arial,sans-serif; color:#24394c;
+    }
+    .player {
+      width:min(100%,390px); padding:18px; border-radius:30px;
+      background:linear-gradient(145deg,#f5f8fb,#9eacbb 22%,#e8edf2 48%,#8798a9 78%,#f1f5f8);
+      box-shadow:inset 2px 2px 4px #fff9, inset -3px -4px 9px #53677a66, 0 24px 45px #172e4666;
+      border:1px solid #ffffffaa;
+    }
+    .brandrow { display:flex; justify-content:space-between; align-items:center; padding:2px 8px 12px; }
+    .brand { font-size:12px; font-weight:900; letter-spacing:3px; color:#334b61; text-transform:uppercase; }
+    .model { font-size:9px; letter-spacing:1px; color:#526a7f; }
+    .screen {
+      border:7px solid #72889b; border-radius:12px; padding:14px 12px 12px;
+      background:linear-gradient(150deg,#d7f0f2,#a9d2de 70%,#bde2e7);
+      box-shadow:inset 0 3px 9px #3b5e7180,0 2px 1px #fff9; min-height:188px;
+      font-family:"Courier New",monospace; color:#12384d; position:relative; overflow:hidden;
+    }
+    .screen:after { content:""; position:absolute; inset:0; pointer-events:none; background:repeating-linear-gradient(transparent 0 3px,#31566b0a 3px 4px); }
+    .screen-top { display:flex; justify-content:space-between; font-size:10px; letter-spacing:1px; }
+    .track { margin:17px 0 3px; font-weight:bold; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .artist { font-size:11px; opacity:.8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .visualizer { display:flex; height:39px; align-items:center; justify-content:center; gap:4px; margin:12px 0 5px; }
+    .bar { width:5px; height:7px; background:#2b6c90; border-radius:2px; animation:equalize .7s ease-in-out infinite alternate; animation-play-state:paused; }
+    .playing .bar { animation-play-state:running; }
+    .bar:nth-child(2n){animation-duration:.45s}.bar:nth-child(3n){animation-duration:.9s}.bar:nth-child(4n){animation-duration:.58s}
+    @keyframes equalize { from{height:5px} to{height:34px} }
+    .progress-wrap { display:flex; align-items:center; gap:8px; font-size:9px; }
+    .progress { flex:1; height:4px; background:#65889a66; border-radius:10px; overflow:hidden; }
+    .progress-fill { width:28%; height:100%; background:#174e73; }
+    .device-controls { margin:15px auto 10px; display:flex; justify-content:center; align-items:center; gap:12px; }
+    button {
+      border:0; cursor:pointer; color:#314a60; font-weight:bold;
+      background:linear-gradient(145deg,#f8fbfd,#aebdca);
+      box-shadow:3px 4px 7px #5e718366,-2px -2px 5px #fff9,inset 1px 1px 2px #fff;
+      transition:transform .12s,filter .12s;
+    }
+    button:active { transform:translateY(2px); filter:brightness(.94); box-shadow:inset 2px 3px 5px #61748866; }
+    .round { width:46px; height:46px; border-radius:50%; font-size:15px; }
+    .play { width:60px; height:60px; border-radius:50%; font-size:21px; color:#174e73; }
+    .modes { display:flex; justify-content:center; gap:10px; margin:12px 0; }
+    .mode { border-radius:14px; padding:7px 13px; font-size:10px; letter-spacing:.5px; }
+    .mode.active { background:linear-gradient(145deg,#5b9ed1,#2f6b9e); color:#fff; box-shadow:inset 2px 2px 4px #163c5c66; }
+    .volume { display:flex; align-items:center; gap:9px; padding:5px 9px; font-size:12px; }
+    input[type=range] { accent-color:#326e9e; width:100%; }
+    .playlist { margin-top:14px; border-radius:15px; padding:10px; background:linear-gradient(145deg,#b4c2cf,#e7edf2); box-shadow:inset 2px 2px 5px #73869a66; }
+    .playlist-title { font-size:10px; font-weight:bold; letter-spacing:1.5px; color:#536a7f; margin:0 0 7px 4px; }
+    .song { display:flex; gap:9px; align-items:center; padding:8px 7px; border-radius:9px; font-size:11px; }
+    .song.current { background:#6d9fc466; color:#193e5c; font-weight:bold; }
+    .song .num { opacity:.65; font-family:monospace; }
+    .song .name { flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+    .song .duration { font-family:monospace; opacity:.65; }
+    .bottom { text-align:center; font-size:8px; letter-spacing:2px; color:#52697d; margin:15px 0 1px; }
+    @media(max-width:420px){ body{padding:14px}.player{padding:14px;border-radius:25px} }
+  </style>
+</head>
+<body>
+  <main class="player" id="player">
+    <div class="brandrow"><span class="brand">ANGIRU</span><span class="model">MP3 · DIGITAL AUDIO</span></div>
+    <section class="screen" aria-label="Display do player">
+      <div class="screen-top"><span id="status">▶ READY</span><span>🔋 100%</span></div>
+      <div class="track" id="track">Dreams (Demo)</div>
+      <div class="artist" id="artist">Angiru Playlist · faixa de exemplo</div>
+      <div class="visualizer" aria-hidden="true">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </div>
+      <div class="progress-wrap"><span>0:00</span><div class="progress"><div class="progress-fill"></div></div><span>3:42</span></div>
+    </section>
+    <div class="device-controls">
+      <button class="round" id="prev" aria-label="Anterior">◀◀</button>
+      <button class="play" id="play" aria-label="Play">▶</button>
+      <button class="round" id="next" aria-label="Próxima">▶▶</button>
+    </div>
+    <div class="modes">
+      <button class="mode" id="shuffle">🔀 SHUFFLE</button>
+      <button class="mode" id="repeat">↻ REPEAT</button>
+    </div>
+    <div class="volume"><span>🔉</span><input id="volume" type="range" min="0" max="100" value="65" aria-label="Volume"><span>🔊</span></div>
+    <section class="playlist">
+      <div class="playlist-title">PLAYLIST · 03 TRACKS</div>
+      <div class="song current"><span class="num">01</span><span class="name">Dreams (Demo)</span><span class="duration">3:42</span></div>
+      <div class="song"><span class="num">02</span><span class="name">Blue Memories</span><span class="duration">4:08</span></div>
+      <div class="song"><span class="num">03</span><span class="name">Midnight Radio</span><span class="duration">3:56</span></div>
+    </section>
+    <div class="bottom">MADE WITH ♡ FOR ANGIRU</div>
+  </main>
+  <script>
+    const player=document.getElementById('player'), playBtn=document.getElementById('play'), status=document.getElementById('status');
+    playBtn.addEventListener('click',()=>{
+      const playing=player.classList.toggle('playing');
+      playBtn.textContent=playing?'Ⅱ':'▶'; status.textContent=playing?'♪ PLAYING':'▶ READY';
+    });
+    ['shuffle','repeat'].forEach(id=>document.getElementById(id).addEventListener('click',e=>e.currentTarget.classList.toggle('active')));
+    const songs=[['Dreams (Demo)','Angiru Playlist · faixa de exemplo'],['Blue Memories','Angiru Playlist · faixa de exemplo'],['Midnight Radio','Angiru Playlist · faixa de exemplo']];
+    let index=0;
+    function selectSong(i){index=(i+songs.length)%songs.length;document.getElementById('track').textContent=songs[index][0];document.getElementById('artist').textContent=songs[index][1];document.querySelectorAll('.song').forEach((el,n)=>el.classList.toggle('current',n===index));}
+    document.getElementById('prev').addEventListener('click',()=>selectSong(index-1));
+    document.getElementById('next').addEventListener('click',()=>selectSong(index+1));
+  </script>
+</body>
+</html>
