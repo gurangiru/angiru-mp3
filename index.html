@@ -7,14 +7,14 @@
 :root{--body-a:#f0f2f4;--body-b:#9aa5b1;--lcd:#0866ff;--lcd2:#0641b9;--glow:#77b7ff;--ink:#d6efff;--button:#d2d8df}
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;padding:20px 14px 30px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;background:radial-gradient(ellipse at top,#c6d9ee,#536c89 65%,#293d53);font-family:Arial,sans-serif;color:#24384d}
-.player{position:relative;width:min(100%,355px);padding:15px 14px 18px;border-radius:34px 34px 44px 44px;background:linear-gradient(125deg,var(--body-a),var(--body-b) 28%,#e7edf2 49%,var(--body-b) 78%,var(--body-a));border:1px solid #fff9;box-shadow:inset 2px 2px 4px #fff,inset -5px -6px 12px #52647788,0 24px 42px #142b4466}
-.loop{width:42px;height:42px;border:6px solid #9caab7;border-radius:50%;margin:-1px auto 5px;box-shadow:inset 1px 1px 4px #52677c,2px 3px 4px #5c7184;position:relative}
+.player{position:relative;width:min(100%,340px);padding:15px 13px 20px;border-radius:48px 48px 58px 58px;background:linear-gradient(115deg,#778491 0%,var(--body-a) 10%,var(--body-b) 24%,#f7f9fb 43%,#9ba8b5 60%,var(--body-a) 77%,#758392 100%);border:2px solid #e8eef4;box-shadow:inset 2px 2px 5px #fff,inset -5px -7px 13px #53657999,0 20px 38px #142b4466;}
+.loop{width:38px;height:38px;border:5px solid #8998a7;border-radius:50%;margin:0 auto 6px;background:linear-gradient(#e9eff4,#a0adba);box-shadow:inset 1px 1px 4px #52677c,2px 3px 4px #5c7184;position:relative}
 .loop:after{content:"";position:absolute;inset:4px;border:2px solid #e6edf2;border-radius:50%}
 .charm{position:absolute;left:-23px;top:25px;font-size:36px;filter:drop-shadow(2px 3px 2px #273c5266);transform:rotate(-12deg);z-index:3}
 .top{display:flex;justify-content:space-between;align-items:center;padding:5px 9px 11px}
 .logo{font-size:12px;font-weight:900;letter-spacing:4px;color:#324d67}
 .label{font-size:8px;letter-spacing:1px;color:#506981}
-.screen{border-radius:12px;background:linear-gradient(160deg,var(--glow),var(--lcd) 22%,var(--lcd2));border:6px solid #263c50;box-shadow:inset 0 0 20px #001e6699,0 2px 0 #fff8;padding:13px 11px;color:var(--ink);font-family:"Courier New",monospace;min-height:176px;position:relative;overflow:hidden;text-shadow:0 0 5px #d9edff66}
+.screen{border-radius:16px;background:linear-gradient(180deg,var(--glow),var(--lcd) 18%,var(--lcd2));border:9px solid #252f3b;outline:2px solid #8a9ba9;box-shadow:inset 0 0 18px #001d6688,0 3px 1px #fff8;padding:13px 11px;color:var(--ink);font-family:"Courier New",monospace;min-height:170px;position:relative;overflow:hidden;text-shadow:0 0 4px #d9edff55}
 .screen:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(transparent 0 3px,#00173b18 3px 4px);pointer-events:none}
 .screen-head{display:flex;justify-content:space-between;font-size:10px;letter-spacing:1px}
 .songname{font-size:14px;font-weight:bold;margin-top:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -27,7 +27,7 @@ body{margin:0;min-height:100vh;padding:20px 14px 30px;display:flex;flex-directio
 .timeline{display:flex;align-items:center;gap:7px;font-size:9px}
 .track{height:4px;border-radius:4px;background:#ffffff66;flex:1;overflow:hidden}.fill{height:100%;width:25%;background:var(--ink)}
 .controls{display:flex;align-items:center;justify-content:center;gap:13px;margin:16px 0 11px}
-button{cursor:pointer;border:0;color:#324b64;background:linear-gradient(145deg,#f8fbfd,#a9b5c1);box-shadow:3px 4px 6px #52657877,-2px -2px 4px #fff9,inset 1px 1px 2px white;font-weight:bold}
+button{cursor:pointer;border:1px solid #b3c0cb;color:#324b64;background:linear-gradient(145deg,#f8fbfd,#a9b5c1);box-shadow:2px 3px 5px #52657866,-2px -2px 4px #fff9,inset 1px 1px 2px white;font-weight:bold}
 button:active{transform:translateY(2px);box-shadow:inset 2px 3px 5px #5c6e8066}
 .round{height:43px;width:43px;border-radius:50%;font-size:13px}.mainplay{height:54px;width:54px;border-radius:50%;font-size:19px;color:#164d78}
 .options{display:flex;justify-content:center;gap:8px;margin-bottom:11px}.option{border-radius:14px;padding:7px 10px;font-size:9px}.option.active{background:linear-gradient(#5297d5,#24659e);color:white}
@@ -63,8 +63,8 @@ button:active{transform:translateY(2px);box-shadow:inset 2px 3px 5px #5c6e8066}
 const device=document.getElementById('player'),play=document.getElementById('play'),status=document.getElementById('status');
 play.onclick=()=>{let on=device.classList.toggle('playing');play.textContent=on?'Ⅱ':'▶';status.textContent=on?'♪ PLAYING':'▶ READY'};
 ['shuffle','repeat'].forEach(id=>document.getElementById(id).onclick=e=>e.currentTarget.classList.toggle('active'));
-const bodyThemes={silver:['#f0f2f4','#9aa5b1'],black:['#555b63','#171a20'],pink:['#f9dce8','#ad718f'],blue:['#d9ecff','#638cb5'],lilac:['#eee4fa','#9882b5'],mint:['#e2f7ed','#80b7a0']};
-const lcdThemes={blue:['#77b7ff','#0866ff','#0641b9','#d6efff'],cyan:['#a1ffff','#08c9d5','#087a99','#e4ffff'],pink:['#ffb4e4','#ff42ae','#a40c73','#ffe6fa'],green:['#9dffae','#16c946','#08752c','#e5ffeb'],amber:['#ffe18a','#ffae00','#a35b00','#fff5d2'],purple:['#d6a8ff','#923cff','#4e159d','#f2e5ff']};
+const bodyThemes={silver:['#f0f2f4','#9aa5b1'],black:['#777e87','#343a42'],pink:['#f9dce8','#ad718f'],blue:['#d9ecff','#638cb5'],lilac:['#eee4fa','#9882b5'],mint:['#e2f7ed','#80b7a0']};
+const lcdThemes={blue:['#8ac5ff','#1684ff','#0648c9','#e2f3ff'],cyan:['#a1ffff','#08c9d5','#087a99','#e4ffff'],pink:['#ffb4e4','#ff42ae','#a40c73','#ffe6fa'],green:['#9dffae','#16c946','#08752c','#e5ffeb'],amber:['#ffe18a','#ffae00','#a35b00','#fff5d2'],purple:['#d6a8ff','#923cff','#4e159d','#f2e5ff']};
 document.getElementById('bodycolor').onchange=e=>{let c=bodyThemes[e.target.value];document.documentElement.style.setProperty('--body-a',c[0]);document.documentElement.style.setProperty('--body-b',c[1])};
 document.getElementById('lcdcolor').onchange=e=>{let c=lcdThemes[e.target.value];['--glow','--lcd','--lcd2','--ink'].forEach((v,i)=>document.documentElement.style.setProperty(v,c[i]))};
 document.getElementById('charmselect').onchange=e=>document.getElementById('charm').textContent=e.target.value.split(' ')[0]==='Sem'?'':e.target.value.split(' ')[0];
