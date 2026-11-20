@@ -30,6 +30,17 @@ body{margin:0;min-height:100vh;padding:22px 13px 30px;display:flex;align-items:c
 .seekrow{display:flex;align-items:center;gap:6px;font-size:8px}
 .seek{height:3px;flex:1;background:#ffffff77;border-radius:4px;overflow:hidden}.seekfill{width:0;height:100%;background:var(--screenText)}
 .side-controls{grid-column:1/3;display:flex;align-items:center;justify-content:center;gap:8px}
+.usb-port{grid-column:1/3;justify-self:end;margin-top:1px;border:0;border-radius:6px;background:#263b50;color:#d5e9f8;padding:5px 10px;font:700 9px Arial;letter-spacing:1px;box-shadow:inset 0 2px 4px #0008,0 1px 2px #fff8;cursor:pointer}
+.usb-port:before{content:"▣";margin-right:5px}
+.usb-panel{display:none;width:min(100%,520px);background:#e7edf3;border:2px solid #8fa6ba;border-radius:14px;padding:13px;box-shadow:inset 2px 2px 5px #fff,0 8px 18px #213a5333}
+.usb-panel.open{display:block}
+.usb-panel h2{margin:0 0 8px;font-size:12px;letter-spacing:1.5px;color:#34556f}
+.usb-panel p{font-size:11px;line-height:1.45;margin:6px 0 10px;color:#526b80}
+.usb-form{display:grid;gap:8px}
+.usb-form input{width:100%;border:1px solid #9bb0c3;border-radius:8px;padding:10px;background:#fff;color:#30465b;font-size:12px}
+.usb-form button{border:1px solid #7292ad;border-radius:8px;background:#3979a9;color:white;padding:10px;font-weight:bold;font-size:12px}
+.usb-msg{font-size:11px;min-height:15px;color:#315d7e}
+.trackrow .remove-track{border:0;background:transparent;color:#627d95;font-size:15px;padding:0 3px;cursor:pointer}
 .small-btn{border-radius:9px;padding:6px 9px;min-height:28px;font-size:9px;color:#42586e;background:linear-gradient(145deg,#f8fbfd,#a9b5c1);border:1px solid #b3c0cb;box-shadow:2px 3px 5px #52657855,-2px -2px 4px #fff9,inset 1px 1px 2px white}
 .small-btn .glyph{font-size:13px;margin-right:3px}
 .custom{width:min(100%,520px);background:#ffffffdf;border:1px solid #ffffffa8;border-radius:18px;padding:13px 15px;box-shadow:0 9px 22px #20395333}
@@ -65,8 +76,15 @@ body{margin:0;min-height:100vh;padding:22px 13px 30px;display:flex;align-items:c
 <button class="small-btn" id="volUp"><span class="glyph">+</span> VOL</button>
 <button class="small-btn" id="next"><span class="glyph">▶</span> NEXT</button>
 </div>
+<button class="usb-port" id="usbOpen" type="button">USB · ADD MUSIC</button>
 </main>
 </div>
+<section class="usb-panel" id="usbPanel">
+<h2>▣ USB CONNECTION · ADD MUSIC</h2>
+<p>Como nos MP3 antigos: conecte virtualmente e “transfira” uma música para sua playlist. Cole um link de YouTube ou um link direto de áudio autorizado.</p>
+<form class="usb-form" id="usbForm"><input id="musicUrl" type="url" placeholder="Cole aqui o link da música" required><input id="musicName" type="text" placeholder="Nome da música (opcional)"><button type="submit">＋ TRANSFERIR PARA O MP3</button></form>
+<div class="usb-msg" id="usbMsg"></div>
+</section>
 <section class="custom">
 <h2>✨ PERSONALIZE SEU MP3</h2>
 <div class="setting"><label for="bodycolor">Cor do aparelho</label><select id="bodycolor"><option value="silver">Prata clássico</option><option value="black">Preto</option><option value="pink">Rosa vibrante</option><option value="blue">Azul</option><option value="lilac">Lilás</option><option value="mint">Verde menta</option></select></div>
@@ -74,21 +92,20 @@ body{margin:0;min-height:100vh;padding:22px 13px 30px;display:flex;align-items:c
 <div class="setting"><label for="charmselect">Chaveirinho</label><select id="charmselect"><option value="🍓">🍓 Moranguinho</option><option value="🎀">🎀 Laço</option><option value="⭐">⭐ Estrela</option><option value="💖">💖 Coração</option><option value="🐰">🐰 Coelhinho</option><option value="🦋">🦋 Borboleta</option><option value="🌙">🌙 Lua</option><option value="🍒">🍒 Cerejinhas</option><option value="🐸">🐸 Sapinho</option><option value="🧸">🧸 Ursinho</option><option value="💿">💿 Mini CD</option><option value="🔮">🔮 Cristal</option><option value="">Sem chaveiro</option></select></div>
 <div class="volume-row"><span>🔉</span><input id="volume" type="range" min="0" max="100" value="65" aria-label="Volume"><span>🔊</span><span id="volLabel">65%</span></div>
 </section>
-<section class="playlist"><h2>PLAYLIST · 03 TRACKS</h2>
-<div class="trackrow selected" data-index="0"><span class="num">01</span><span class="songtitle">Dreams (Demo)</span><span class="duration">3:42</span></div>
-<div class="trackrow" data-index="1"><span class="num">02</span><span class="songtitle">Blue Memories</span><span class="duration">4:08</span></div>
-<div class="trackrow" data-index="2"><span class="num">03</span><span class="songtitle">Midnight Radio</span><span class="duration">3:56</span></div>
-</section>
+<section class="playlist"><h2 id="playlistHeading">PLAYLIST · 03 TRACKS</h2><div id="playlistRows"></div></section>
 <p class="note">Protótipo visual: a reprodução real de áudio será adicionada em uma próxima etapa. Personalizações ficam salvas neste navegador.</p>
 <script>
 const $=id=>document.getElementById(id),device=$('device'),play=$('play'),status=$('status');
-const songs=[{title:'Dreams (Demo)',artist:'Angiru · demo track',seconds:222},{title:'Blue Memories',artist:'Angiru · demo track',seconds:248},{title:'Midnight Radio',artist:'Angiru · demo track',seconds:236}];
+const demoSongs=[{title:'Dreams (Demo)',artist:'Angiru · demo track',seconds:222,source:'demo'},{title:'Blue Memories',artist:'Angiru · demo track',seconds:248,source:'demo'},{title:'Midnight Radio',artist:'Angiru · demo track',seconds:236,source:'demo'}];
+let addedSongs=[];try{addedSongs=JSON.parse(localStorage.getItem('angiruMP3Tracks')||'[]')}catch(e){addedSongs=[]}
+let songs=[...demoSongs,...addedSongs];
 let idx=0,playing=false,elapsed=0,vol=65;
 function fmt(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
 function selectSong(i){idx=(i+songs.length)%songs.length;elapsed=0;updateSong();if(playing)startSim()}
-function updateSong(){const s=songs[idx];$('songTitle').textContent=s.title;$('artist').textContent=s.artist;$('duration').textContent=fmt(s.seconds);$('elapsed').textContent=fmt(elapsed);$('seekfill').style.width=(elapsed/s.seconds*100)+'%';document.querySelectorAll('.trackrow').forEach((r,n)=>r.classList.toggle('selected',n===idx))}
+function renderPlaylist(){ $('playlistHeading').textContent='PLAYLIST · '+String(songs.length).padStart(2,'0')+' TRACKS';$('playlistRows').innerHTML='';songs.forEach((s,n)=>{const row=document.createElement('div');row.className='trackrow'+(n===idx?' selected':'');row.dataset.index=n;row.innerHTML='<span class="num">'+String(n+1).padStart(2,'0')+'</span><span class="songtitle"></span><span class="duration"></span>'+(s.source==='user'?'<button class="remove-track" type="button" aria-label="Remover música">×</button>':'');row.querySelector('.songtitle').textContent=s.title;row.querySelector('.duration').textContent=s.seconds?fmt(s.seconds):'LINK';row.onclick=e=>{if(e.target.closest('.remove-track'))return;selectSong(n)};const remove=row.querySelector('.remove-track');if(remove)remove.onclick=e=>{e.stopPropagation();addedSongs.splice(n-demoSongs.length,1);saveTracks();songs=[...demoSongs,...addedSongs];if(idx>=songs.length)idx=Math.max(0,songs.length-1);updateSong()};$('playlistRows').appendChild(row)})}
+function updateSong(){const s=songs[idx];$('songTitle').textContent=s.title;$('artist').textContent=s.artist;$('duration').textContent=s.seconds?fmt(s.seconds):'LINK';$('elapsed').textContent=fmt(elapsed);$('seekfill').style.width=(s.seconds?elapsed/s.seconds*100:0)+'%';renderPlaylist()}
 function togglePlay(){playing=!playing;device.classList.toggle('is-playing',playing);play.textContent=playing?'Ⅱ':'▶';status.textContent=playing?'♪ PLAYING':'▶ READY'}
-let tick;function startSim(){clearInterval(tick);if(playing)tick=setInterval(()=>{elapsed++;if(elapsed>=songs[idx].seconds){selectSong(idx+1)}updateSong()},1000)}
+let tick;function startSim(){clearInterval(tick);if(playing&&songs[idx].seconds)tick=setInterval(()=>{elapsed++;if(elapsed>=songs[idx].seconds){selectSong(idx+1)}updateSong()},1000)}
 play.onclick=()=>{togglePlay();startSim()};
 $('prev').onclick=()=>selectSong(idx-1);$('next').onclick=()=>selectSong(idx+1);
 document.querySelectorAll('.trackrow').forEach(r=>r.onclick=()=>selectSong(Number(r.dataset.index)));
@@ -106,6 +123,9 @@ $('volume').oninput=e=>{setVol(Number(e.target.value));save()};
 $('volDown').onclick=()=>{setVol(Math.max(0,vol-10));save()};
 $('volUp').onclick=()=>{setVol(Math.min(100,vol+10));save()};
 try{const p=JSON.parse(localStorage.getItem('angiruMP3Prefs')||'null');if(p){$('bodycolor').value=p.shell||'silver';$('lcdcolor').value=p.lcd||'blue';$('charmselect').value=p.charm??'🍓';$('charm').textContent=$('charmselect').value;setVol(p.volume??65);applyShell($('bodycolor').value);applyLCD($('lcdcolor').value)}}catch(e){}
+$('usbOpen').onclick=()=>{$('usbPanel').classList.toggle('open');$('usbMsg').textContent='';if($('usbPanel').classList.contains('open'))$('musicUrl').focus()};
+$('usbForm').onsubmit=e=>{e.preventDefault();const url=$('musicUrl').value.trim();if(!/^https:\/\//i.test(url)){ $('usbMsg').textContent='Use um link seguro iniciado por https://';return}const name=$('musicName').value.trim();let host='Link de áudio';try{const u=new URL(url);if(/youtube\.com|youtu\.be/i.test(u.hostname))host='YouTube · link salvo (player oficial será integrado na próxima etapa)';else if(/\.(mp3|m4a|ogg|wav|aac|flac)(\?|$)/i.test(u.pathname))host='Áudio · link salvo';else host=u.hostname}catch(e){}addedSongs.push({title:name||'Música '+(addedSongs.length+1),artist:host,seconds:null,url,source:'user'});saveTracks();songs=[...demoSongs,...addedSongs];selectSong(songs.length-1);$('musicUrl').value='';$('musicName').value='';$('usbMsg').textContent='Transferência concluída! Música adicionada à playlist deste navegador. 🎵'};
+function saveTracks(){localStorage.setItem('angiruMP3Tracks',JSON.stringify(addedSongs))}
 updateSong();
 </script>
 </body></html>
