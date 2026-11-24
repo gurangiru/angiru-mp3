@@ -53,7 +53,7 @@ body.theme-neon{background:radial-gradient(ellipse at top,#4b1e76,#10142e 70%,#0
 .track-more{border:0;background:transparent;color:#58748e;font-size:21px;line-height:18px;padding:0 2px;cursor:pointer}
 .track-menu{position:absolute;z-index:20;right:0;top:23px;min-width:145px;padding:5px;border:1px solid #9aafc2;border-radius:9px;background:#f4f8fc;box-shadow:0 5px 14px #20395355;display:flex;flex-direction:column;gap:2px}
 .track-menu[hidden]{display:none}.track-menu button{border:0;border-radius:6px;background:transparent;color:#304d67;text-align:left;padding:7px 8px;font-size:11px;cursor:pointer}
-.track-menu button:hover{background:#dce9f5}.night-mode .track-more{color:#c5ddf3}.night-mode .track-menu{background:#1b3048;border-color:#587796}.night-mode .track-menu button{color:#e0efff}.night-mode .track-menu button:hover{background:#355575}
+.track-menu button:hover{background:#dce9f5}.track-destinations{margin:2px 0 3px 7px;padding-left:5px;border-left:2px solid #a9bfd3;display:flex;flex-direction:column;gap:2px}.track-destinations[hidden]{display:none}.track-destinations button{font-size:10px!important;padding:6px 7px!important}.track-menu button:disabled{opacity:.55;cursor:default}.night-mode .track-destinations{border-left-color:#587796}.night-mode .track-more{color:#c5ddf3}.night-mode .track-menu{background:#1b3048;border-color:#587796}.night-mode .track-menu button{color:#e0efff}.night-mode .track-menu button:hover{background:#355575}
 .small-btn{border-radius:9px;padding:6px 9px;min-height:28px;font-size:9px;color:#42586e;background:linear-gradient(145deg,#f8fbfd,#a9b5c1);border:1px solid #b3c0cb;box-shadow:2px 3px 5px #52657855,-2px -2px 4px #fff9,inset 1px 1px 2px white}
 .small-btn .glyph{font-size:13px;margin-right:3px}
  .custom{width:min(100%,520px);background:#ffffffdf;border:1px solid #ffffffa8;border-radius:18px;padding:13px 15px;box-shadow:0 9px 22px #20395333;transition:background .5s,color .5s}.night-mode .custom,.night-mode .playlist,.night-mode .usb-panel{background:linear-gradient(145deg,#1a2b42ee,#263b55ee);border-color:#496987;color:#d7e8f7;box-shadow:0 9px 24px #0006,inset 1px 1px 4px #8bb4df22}.night-mode .custom h2,.night-mode .playlist h2,.night-mode .usb-panel h2{color:#b7d8f4}.night-mode .setting select,.night-mode .usb-form input{background:#15243a;color:#e0efff;border-color:#4d6d8d}.night-mode .trackrow{color:#d5e6f5}.night-mode .trackrow.selected{background:#4979a566;color:#f2f8ff}.night-mode .usb-panel p{color:#b7cde0}.night-mode .usb-msg{color:#bfe2ff}.night-mode .note{color:#d7eaff}
@@ -150,7 +150,7 @@ function renderPlaylistManager(){
  userPlaylists.forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.id==='default'?tr('defaultPlaylist'):p.name;select.appendChild(o)});
  select.value=activePlaylistId;
  $('playlistCreate').title=tr('createPlaylist');$('playlistRename').title=tr('renamePlaylist');$('playlistDelete').title=tr('deletePlaylist');
- $('playlistRename').disabled=activePlaylistId==='default';$('playlistDelete').disabled=activePlaylistId==='default';
+ $('playlistRename').disabled=activePlaylistId==='default'||activePlaylistId===FAVORITES_VIEW;$('playlistDelete').disabled=activePlaylistId==='default'||activePlaylistId===FAVORITES_VIEW;
 }
 function switchPlaylist(id){
  if(id!==FAVORITES_VIEW&&!userPlaylists.some(p=>p.id===id))return;
