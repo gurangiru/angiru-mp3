@@ -123,7 +123,7 @@ if(!userPlaylists.some(p=>p.id==='default'))userPlaylists.unshift({id:'default',
 addedSongs.forEach(s=>{if(!s.playlistId||!userPlaylists.some(p=>p.id===s.playlistId))s.playlistId='default'});
 let activePlaylistId=localStorage.getItem(ACTIVE_PLAYLIST_KEY)||'default';if(!userPlaylists.some(p=>p.id===activePlaylistId))activePlaylistId='default';
 let demoDismissed=localStorage.getItem('angiruMP3DemoDismissed')==='1'||addedSongs.length>0;if(demoDismissed)localStorage.setItem('angiruMP3DemoDismissed','1');
-const FAVORITES_VIEW='__favorites__';let songs=[];function refreshPlaylistSongs(){if(activePlaylistId===FAVORITES_VIEW){songs=addedSongs.filter(s=>s.favorite);shuffleBag=[];return}const own=addedSongs.filter(s=>s.playlistId===activePlaylistId);songs=(!demoDismissed&&activePlaylistId==='default')?[...demoSongs,...own]:own;shuffleBag=[]}
+const FAVORITES_VIEW='__favorites__';let songs=[];function refreshPlaylistSongs(){if(activePlaylistId===FAVORITES_VIEW){songs=addedSongs.filter(s=>s.favorite);return}const own=addedSongs.filter(s=>s.playlistId===activePlaylistId);songs=(!demoDismissed&&activePlaylistId==='default')?[...demoSongs,...own]:own}
 refreshPlaylistSongs();
 let idx=0,playing=false,shuffleMode=false,shuffleBag=[],elapsed=0,vol=65,ytPlayer=null,ytApiReady=false,ytPlayerReady=false,ytPendingId=null,ytPendingPlaylistId=null,ytWantsPlay=false,ytTimer=null,spotifyApi=null,spotifyController=null,spotifyPendingUrl=null,spotifyWantsPlay=false,audioContext=null,analyser=null,audioSource=null,eqFrame=null;let corsFallbackUsed=false;
 const translations={
@@ -159,7 +159,7 @@ function refillShuffleBag(){shuffleBag=Array.from({length:songs.length},(_,i)=>i
 function nextSongIndex(){if(!shuffleMode)return idx+1;if(songs.length<2)return idx;if(!shuffleBag.length)refillShuffleBag();return shuffleBag.pop()}
 function switchPlaylist(id){
  if(id!==FAVORITES_VIEW&&!userPlaylists.some(p=>p.id===id))return;
- activePlaylistId=id;localStorage.setItem(ACTIVE_PLAYLIST_KEY,id);refreshPlaylistSongs();idx=0;elapsed=0;selectSong(0);renderPlaylistManager()
+ activePlaylistId=id;localStorage.setItem(ACTIVE_PLAYLIST_KEY,id);refreshPlaylistSongs();shuffleBag=[];idx=0;elapsed=0;selectSong(0);renderPlaylistManager()
 }
 $('playlistSelect').onchange=e=>switchPlaylist(e.target.value);
 $('playlistCreate').onclick=()=>{
