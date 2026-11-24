@@ -146,7 +146,7 @@ function isDirectAudio(url){try{const parsed=new URL(url);return parsed.protocol
 function syncPlayUI(){device.classList.toggle('is-playing',playing);play.textContent=playing?'Ⅱ':'▶';const u=songs[idx]?.url||'';if(getSpotifyPlaylistId(u))status.textContent=playing?'SPOTIFY · PLAYING':'SPOTIFY · READY';else if(!u||!getYoutubeId(u))status.textContent=playing?tr('playing'):tr('ready')}
 function renderPlaylistManager(){
  const select=$('playlistSelect');if(!select)return;select.innerHTML='';
- userPlaylists.forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.name;select.appendChild(o)});
+ userPlaylists.forEach(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.id==='default'?tr('defaultPlaylist'):p.name;select.appendChild(o)});
  select.value=activePlaylistId;
  $('playlistCreate').title=tr('createPlaylist');$('playlistRename').title=tr('renamePlaylist');$('playlistDelete').title=tr('deletePlaylist');
  $('playlistRename').disabled=activePlaylistId==='default';$('playlistDelete').disabled=activePlaylistId==='default';
@@ -172,7 +172,7 @@ $('playlistDelete').onclick=()=>{
  addedSongs=addedSongs.filter(s=>s.playlistId!==p.id);userPlaylists=userPlaylists.filter(x=>x.id!==p.id);activePlaylistId='default';saveTracks();refreshPlaylistSongs();idx=0;selectSong(0);renderPlaylistManager()
 };
 function renderPlaylist(){
- renderPlaylistManager();$('playlistHeading').textContent=(userPlaylists.find(p=>p.id===activePlaylistId)?.name||tr('playlist'))+' · '+String(songs.length).padStart(2,'0')+' '+tr('tracks');$('playlistRows').innerHTML='';
+ renderPlaylistManager();$('playlistHeading').textContent=(activePlaylistId==='default'?tr('defaultPlaylist'):(userPlaylists.find(p=>p.id===activePlaylistId)?.name||tr('playlist')))+' · '+String(songs.length).padStart(2,'0')+' '+tr('tracks');$('playlistRows').innerHTML='';
  if(!songs.length){$('playlistRows').textContent=tr('empty');return}
  songs.forEach((s,n)=>{
   const row=document.createElement('div'),isDemo=s.source==='demo',userIndex=n-(demoDismissed?0:demoSongs.length);
